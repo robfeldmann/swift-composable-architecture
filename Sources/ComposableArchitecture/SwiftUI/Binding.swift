@@ -164,6 +164,12 @@ extension BindableAction {
 @propertyWrapper
 public struct BindingViewState<Value> {
   let binding: Binding<Value>
+	let initialValue: Value
+
+	init(binding: Binding<Value>) {
+		self.binding = binding
+		self.initialValue = binding.wrappedValue
+	}
 
   public var wrappedValue: Value {
     get { self.binding.wrappedValue }
@@ -177,12 +183,13 @@ public struct BindingViewState<Value> {
 
 extension BindingViewState: Equatable where Value: Equatable {
   public static func == (lhs: Self, rhs: Self) -> Bool {
-    lhs.wrappedValue == rhs.wrappedValue
+		lhs.initialValue == rhs.initialValue && lhs.wrappedValue == rhs.wrappedValue
   }
 }
 
 extension BindingViewState: Hashable where Value: Hashable {
   public func hash(into hasher: inout Hasher) {
+		hasher.combine(self.initialValue)
     hasher.combine(self.wrappedValue)
   }
 }
